@@ -59,7 +59,7 @@ def get_all(df, n_lbls):
     for i, r in enumerate(df):
         print(i)
         tok_, labels_ = get_texts(r, n_lbls)
-        tok += tok_;
+        tok += tok_
         labels += labels_
     return tok, labels
 
@@ -69,64 +69,63 @@ def get_all(df, n_lbls):
 
 BOS = 'xbos'  # beginning-of-sentence tag
 FLD = 'xfld'  # data field tag
-tok_trn, trn_labels = get_all(df_trn, 1)
+tok_file1 = 'data/ag_news_csv/tok_trn.npy'
+tok_file2 = 'data/ag_news_csv/tok_val.npy'
+if (os.path.exists(tok_file1)): 
+    tok_trn, trn_labels = get_all(df_trn, 1)
+
+    tok_val, val_labels = get_all(df_val, 1)
 
 
-# In[12]:
+    # In[16]:
 
 
-tok_val, val_labels = get_all(df_val, 1)
+    np.save('data/ag_news_csv/tok_trn.npy', tok_trn)
+    np.save('data/ag_news_csv/tok_val.npy', tok_val)
 
 
-# In[16]:
+    # In[17]:
 
 
-np.save('data/ag_news_csv/tok_trn.npy', tok_trn)
-np.save('data/ag_news_csv/tok_val.npy', tok_val)
+    freq = Counter(p for o in tok_trn for p in o)
+    freq.most_common(25)
 
 
-# In[17]:
+    # In[18]:
 
 
-freq = Counter(p for o in tok_trn for p in o)
-freq.most_common(25)
+    max_vocab = 60000
+    min_freq = 2
 
 
-# In[18]:
+    # In[19]:
 
 
-max_vocab = 60000
-min_freq = 2
+    itos = [o for o,c in freq.most_common(max_vocab) if c>min_freq]
+    itos.insert(0, '_pad_')
+    itos.insert(0, '_unk_')
 
 
-# In[19]:
+    # In[21]:
 
 
-itos = [o for o,c in freq.most_common(max_vocab) if c>min_freq]
-itos.insert(0, '_pad_')
-itos.insert(0, '_unk_')
+    stoi = collections.defaultdict(lambda:0, {v:k for k,v in enumerate(itos)})
+    len(itos)
 
 
-# In[21]:
+    # In[22]:
 
 
-stoi = collections.defaultdict(lambda:0, {v:k for k,v in enumerate(itos)})
-len(itos)
+    trn_lm = np.array([[stoi[o] for o in p] for p in tok_trn])
+    val_lm = np.array([[stoi[o] for o in p] for p in tok_val])
 
 
-# In[22]:
+    # In[23]:
 
 
-trn_lm = np.array([[stoi[o] for o in p] for p in tok_trn])
-val_lm = np.array([[stoi[o] for o in p] for p in tok_val])
-
-
-# In[23]:
-
-
-np.save('data/ag_news_csv/trn_ids.npy', trn_lm)
-np.save('data/ag_news_csv/val_ids.npy', val_lm)
-pickle.dump(itos, open('data/ag_news_csv/itos.pkl', 'wb'))
+    np.save('data/ag_news_csv/trn_ids.npy', trn_lm)
+    np.save('data/ag_news_csv/val_ids.npy', val_lm)
+    pickle.dump(itos, open('data/ag_news_csv/itos.pkl', 'wb'))
 
 
 # In[5]:
@@ -319,26 +318,25 @@ tok_val, val_labels = get_all(df_val, 1)
 # In[ ]:
 
 
-(CLAS_PATH/'tmp').mkdir(exist_ok=True)
 
 np.save('tok_trn.npy', tok_trn)
-np.save(CLAS_PATH/'tmp'/'tok_val.npy', tok_val)
+np.save('tmp'/'tok_val.npy', tok_val)
 
-np.save(CLAS_PATH/'tmp'/'trn_labels.npy', trn_labels)
-np.save(CLAS_PATH/'tmp'/'val_labels.npy', val_labels)
-
-
-# In[ ]:
-
-
-tok_trn = np.load(CLAS_PATH/'tmp'/'tok_trn.npy')
-tok_val = np.load(CLAS_PATH/'tmp'/'tok_val.npy')
+np.save('tmp'/'trn_labels.npy', trn_labels)
+np.save('tmp'/'val_labels.npy', val_labels)
 
 
 # In[ ]:
 
 
-itos = pickle.load((LM_PATH/'tmp'/'itos.pkl').open('rb'))
+tok_trn = np.load('tmp'/'tok_trn.npy')
+tok_val = np.load('tmp'/'tok_val.npy')
+
+
+# In[ ]:
+
+
+itos = pickle.load(('tmp'/'itos.pkl').open('rb'))
 stoi = collections.defaultdict(lambda:0, {v:k for k,v in enumerate(itos)})
 len(itos)
 
@@ -364,15 +362,15 @@ np.save(CLAS_PATH/'tmp'/'val_ids.npy', val_clas)
 # In[ ]:
 
 
-trn_clas = np.load(CLAS_PATH/'tmp'/'trn_ids.npy')
-val_clas = np.load(CLAS_PATH/'tmp'/'val_ids.npy')
+trn_clas = np.load('tmp'/'trn_ids.npy')
+val_clas = np.load('tmp'/'val_ids.npy')
 
 
 # In[ ]:
 
 
-trn_labels = np.squeeze(np.load(CLAS_PATH/'tmp'/'trn_labels.npy'))
-val_labels = np.squeeze(np.load(CLAS_PATH/'tmp'/'val_labels.npy'))
+trn_labels = np.squeeze(np.load('tmp'/'trn_labels.npy'))
+val_labels = np.squeeze(np.load('tmp'/'val_labels.npy'))
 
 
 # In[ ]:
