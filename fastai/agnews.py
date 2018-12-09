@@ -475,7 +475,7 @@ learn.freeze_to(-1)
 
 
 learn.lr_find(lrs/1000)
-learn.sched.plot()
+#learn.sched.plot()
 
 
 # In[ ]:
@@ -535,7 +535,7 @@ learn.fit(lrs, 1, wds=wd, cycle_len=14, use_clr=(32,10))
 # In[ ]:
 
 
-learn.sched.plot_loss()
+#learn.sched.plot_loss()
 
 
 # In[ ]:
@@ -551,5 +551,5 @@ learn.save('clas_2')
 # In[ ]:
 
 
-learn.sched.plot_loss()
+#learn.sched.plot_loss()
 
